@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun CarreraScreen() {
@@ -108,12 +110,14 @@ fun CarreraScreen() {
 
         Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
             vehicles.forEach { vehicle ->
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    val amplePista = maxWidth
+
                     Box(Modifier.fillMaxHeight().width(4.dp).background(Color.Red).align(Alignment.CenterEnd))
 
-                    VehicleRow(vehicle)
+                    VehicleRow(vehicle, amplePista)
                 }
-                Divider()
+                HorizontalDivider()
             }
         }
 
@@ -126,19 +130,27 @@ fun CarreraScreen() {
     }
 }
 
+
 @Composable
-fun VehicleRow(vehicle: Vehicle) {
-    val animPos by animateDpAsState(targetValue = (vehicle.posicio * 2).dp)
+fun VehicleRow(vehicle: Vehicle, amplePista: Dp) {
+    val midaVehicle = 60.dp
+
+    val recorregutMaxim = amplePista - midaVehicle
+    val destinacio = recorregutMaxim * (vehicle.posicio / 100f)
+
+    val animPos by animateDpAsState(targetValue = destinacio)
 
     Row(
-        modifier = Modifier.fillMaxSize().offset(x = animPos),
+        modifier = Modifier
+            .fillMaxSize()
+            .offset(x = animPos),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
                 painter = painterResource(id = vehicle.tipus.imatge),
                 contentDescription = null,
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(midaVehicle),
                 tint = Color.Unspecified
             )
             Box(
